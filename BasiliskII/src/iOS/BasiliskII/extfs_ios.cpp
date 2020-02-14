@@ -34,6 +34,7 @@
 #include "prefs.h"
 #include "extfs.h"
 #include "extfs_defs.h"
+#include "extfs_ios_helper.h"
 
 // XXX: don't clobber with native definitions
 #define noErr	native_noErr
@@ -294,6 +295,9 @@ int open_rfork(const char *path, int flag)
     
     // Open temporary file for resource fork
     char *tmpdir = getenv("TMPDIR");
+    if (tmpdir == NULL) {
+        tmpdir = strdup(getAltTempDirectory());
+    }
     size_t rname_len = strlen(tmpdir) + 1 + 36 + 4 + 1;
     char rname[rname_len];
     strcpy(rname, tmpdir);
