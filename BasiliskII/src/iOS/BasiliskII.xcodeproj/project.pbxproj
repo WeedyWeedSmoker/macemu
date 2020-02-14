@@ -113,6 +113,7 @@
 		28D555A51C93651300059DDE /* B2MiscSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D555A41C93651300059DDE /* B2MiscSettingsViewController.m */; };
 		28D555AE1C97739500059DDE /* B2FileChooser.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D555AD1C97739500059DDE /* B2FileChooser.m */; };
 		28FA0B771CC829A900481FE8 /* B2Application.mm in Sources */ = {isa = PBXBuildFile; fileRef = 28FA0B761CC829A900481FE8 /* B2Application.mm */; };
+		30DED49323F661CF00590F30 /* extfs_ios_helper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 30DED49223F661CF00590F30 /* extfs_ios_helper.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -350,6 +351,8 @@
 		28D555AD1C97739500059DDE /* B2FileChooser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = B2FileChooser.m; sourceTree = "<group>"; };
 		28FA0B751CC829A900481FE8 /* B2Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = B2Application.h; sourceTree = "<group>"; };
 		28FA0B761CC829A900481FE8 /* B2Application.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = B2Application.mm; sourceTree = "<group>"; };
+		30DED49123F6617000590F30 /* extfs_ios_helper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = extfs_ios_helper.h; sourceTree = "<group>"; };
+		30DED49223F661CF00590F30 /* extfs_ios_helper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = extfs_ios_helper.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -521,6 +524,8 @@
 				2898F54518CB879400FE7806 /* clip_ios.mm */,
 				2898F54618CB879400FE7806 /* ether_ios.cpp */,
 				2898F55C18CB8E0700FE7806 /* extfs_ios.cpp */,
+				30DED49123F6617000590F30 /* extfs_ios_helper.h */,
+				30DED49223F661CF00590F30 /* extfs_ios_helper.mm */,
 				2898F54718CB879400FE7806 /* prefs_editor_ios.cpp */,
 				2898F54818CB879400FE7806 /* prefs_ios.mm */,
 				2898F54918CB879400FE7806 /* scsi_ios.cpp */,
@@ -913,6 +918,7 @@
 				288C50161B9C6E8B00EA91F3 /* video_blit.cpp in Sources */,
 				2898F4A718CB72C100FE7806 /* slot_rom.cpp in Sources */,
 				2898F53E18CB866900FE7806 /* cpuemu.cpp in Sources */,
+				30DED49323F661CF00590F30 /* extfs_ios_helper.mm in Sources */,
 				2898F4A318CB72C100FE7806 /* rom_patches.cpp in Sources */,
 				28AD37C519A6135500ADF203 /* ip_output.c in Sources */,
 				28AD37BF19A6135500ADF203 /* bootp.c in Sources */,
