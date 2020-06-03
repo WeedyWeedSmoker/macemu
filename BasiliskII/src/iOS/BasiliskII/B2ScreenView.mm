@@ -40,10 +40,6 @@ B2ScreenView *sharedScreenView = nil;
     }
     CGSize landscapeScreenSize = screenSize;
     CGSize portraitScreenSize = CGSizeMake(screenSize.height, screenSize.width);
-    if (screenSize.width == 812.0 && screenSize.height == 375.0) {
-        landscapeScreenSize = CGSizeMake(752.0, 354.0);
-        portraitScreenSize = CGSizeMake(375.0, 734.0);
-    }
     
     // current screen size
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"videoDepth": @(8), @"videoSize": NSStringFromCGSize(screenSize)}];
@@ -59,9 +55,8 @@ B2ScreenView *sharedScreenView = nil;
     [videoModes addObject:[NSValue valueWithCGSize:CGSizeMake(640, 480)]];
     [videoModes addObject:[NSValue valueWithCGSize:CGSizeMake(800, 600)]];
     [videoModes addObject:[NSValue valueWithCGSize:CGSizeMake(832, 624)]];
-    if (screenSize.width > 1024) {
-        [videoModes addObject:[NSValue valueWithCGSize:CGSizeMake(1024, 768)]];
-    }
+    [videoModes addObject:[NSValue valueWithCGSize:CGSizeMake(1024, 768)]];
+    
     _videoModes = [NSArray arrayWithArray:videoModes];
 }
 
@@ -71,35 +66,47 @@ B2ScreenView *sharedScreenView = nil;
     dispatch_once(&onceToken, ^{
         [self initVideoModes];
     });
-    if (_screenSize.width > 0.0) {
-        [self setScreenSize:_screenSize];
-    }
-}
 
-- (CGRect)_threadsafeBounds {
-    if ([NSThread isMainThread]) {
-        return self.bounds;
-    } else {
-        __block CGRect bounds;
-        dispatch_sync(dispatch_get_main_queue(), ^{
-            bounds = self.bounds;
-        });
-        return bounds;
+    if (!CGSizeEqualToSize(_screenSize, CGSizeZero)) {
+        // Resize screen view after updating constraints
+        CGRect viewBounds = self.bounds;
+        CGSize screenSize = _screenSize;
+        CGFloat screenScale = MAX(screenSize.width / viewBounds.size.width, screenSize.height / viewBounds.size.height);
+        _screenBounds = CGRectMake(0, 0, screenSize.width / screenScale, screenSize.height / screenScale);
+        _screenBounds.origin.x = (viewBounds.size.width - _screenBounds.size.width)/2;
+        _screenBounds = CGRectIntegral(_screenBounds);
+        videoLayer.frame = _screenBounds;
+        BOOL scaleIsIntegral = (floor(screenScale) == screenScale);
+        NSString *filter = scaleIsIntegral ? kCAFilterNearest : kCAFilterLinear;
+        videoLayer.magnificationFilter = filter;
+        videoLayer.minificationFilter = filter;
     }
 }
 
 - (void)setScreenSize:(CGSize)screenSize {
+    if (![NSThread isMainThread]) {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [self setScreenSize:screenSize];
+        });
+        return;
+    }
+    
     _screenSize = screenSize;
-    CGRect viewBounds = [self _threadsafeBounds];
-    CGFloat screenScale = MAX(screenSize.width / viewBounds.size.width, screenSize.height / viewBounds.size.height);
-    _screenBounds = CGRectMake(0, 0, screenSize.width / screenScale, screenSize.height / screenScale);
-    _screenBounds.origin.x = (viewBounds.size.width - _screenBounds.size.width)/2;
-    _screenBounds = CGRectIntegral(_screenBounds);
-    videoLayer.frame = _screenBounds;
-    BOOL scaleIsIntegral = (floor(screenScale) == screenScale);
-    NSString *filter = scaleIsIntegral ? kCAFilterNearest : kCAFilterLinear;
-    videoLayer.magnificationFilter = filter;
-    videoLayer.minificationFilter = filter;
+    [self updateConstraints];
+    [self setNeedsLayout];
+}
+
+- (void)updateConstraints {
+    [super updateConstraints];
+    CGFloat scale = _screenSize.height / self.superview.bounds.size.height;
+    BOOL wantsMargins = floor(scale) != scale;
+    if (wantsMargins) {
+        [NSLayoutConstraint deactivateConstraints:self.fullScreenConstraints];
+        [NSLayoutConstraint activateConstraints:self.marginConstraints];
+    } else {
+        [NSLayoutConstraint deactivateConstraints:self.marginConstraints];
+        [NSLayoutConstraint activateConstraints:self.fullScreenConstraints];
+    }
 }
 
 - (void)updateImage:(CGImageRef)newImage {

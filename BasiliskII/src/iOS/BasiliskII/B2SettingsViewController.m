@@ -18,7 +18,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.splitViewController.delegate = self;
-    [self showSidebarIfNeededForSize:self.view.bounds.size];
+    self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
 }
 
 - (UISplitViewController *)splitViewController {
@@ -27,20 +27,6 @@
 
 - (BOOL)splitViewController:(UISplitViewController *)splitViewController collapseSecondaryViewController:(UIViewController *)secondaryViewController ontoPrimaryViewController:(UIViewController *)primaryViewController {
     return YES;
-}
-
-- (void)showSidebarIfNeededForSize:(CGSize)size {
-    if (size.width > size.height && size.width >= 480.0) {
-        UITraitCollection *traits = [UITraitCollection traitCollectionWithHorizontalSizeClass:UIUserInterfaceSizeClassRegular];
-        [self setOverrideTraitCollection:traits forChildViewController:self.splitViewController];
-    } else {
-        [self setOverrideTraitCollection:nil forChildViewController:self.splitViewController];
-    }
-}
-
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    [self showSidebarIfNeededForSize:size];
 }
 
 @end

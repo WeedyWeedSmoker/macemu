@@ -38,7 +38,6 @@
 }
 
 - (void)willMoveToSuperview:(UIView *)newSuperview {
-    ADBSetRelMouseMode(true);
     [super willMoveToSuperview:newSuperview];
     @try {
         supportsForceTouch = (newSuperview.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable);
@@ -80,6 +79,7 @@
 
     if (!CGPointEqualToPoint(touchLoc, previousTouchLoc)) {
         shouldClick = NO;
+        ADBSetRelMouseMode(true);
         ADBMouseMoved((int)locDiff.x, (int)locDiff.y);
     }
     

@@ -16,6 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGRect screenBounds;
 @property (nonatomic, readonly) NSArray<NSValue*> *videoModes;
 @property (nonatomic, readonly) BOOL hasRetinaVideoMode;
+@property (nonatomic, strong) IBOutletCollection(NSLayoutConstraint) NSArray<NSLayoutConstraint*> *fullScreenConstraints;
+@property (nonatomic, strong) IBOutletCollection(NSLayoutConstraint) NSArray<NSLayoutConstraint*> *marginConstraints;
+
 - (void)updateImage:(CGImageRef)newImage;
 
 @end

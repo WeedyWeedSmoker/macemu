@@ -16,11 +16,20 @@
 #include "sysdeps.h"
 #include "adb.h"
 
+#ifdef __IPHONE_13_4
+@interface B2ViewController (PointerInteraction) <UIPointerInteractionDelegate>
+
+@end
+#endif
+
 @implementation B2ViewController
 {
     KBKeyboardView *keyboardView;
     UISwipeGestureRecognizer *showKeyboardGesture, *hideKeyboardGesture;
     UIControl *pointingDeviceView;
+    #ifdef __IPHONE_13_4
+    UIPointerInteraction *pointerInteraction;
+    #endif
 }
 
 - (void)viewDidLoad {
@@ -69,8 +78,17 @@
     BOOL useTrackPad = [[NSUserDefaults standardUserDefaults] boolForKey:@"trackpad"];
     Class pointingDeviceClass = useTrackPad ? [B2TrackPad class] : [B2TouchScreen class];
     pointingDeviceView = [[pointingDeviceClass alloc] initWithFrame:self.view.bounds];
-    pointingDeviceView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view insertSubview:pointingDeviceView aboveSubview:sharedScreenView];
+    if (@available(iOS 13.4, *)) {
+        pointerInteraction = [[UIPointerInteraction alloc] initWithDelegate:self];
+        [pointingDeviceView addInteraction:pointerInteraction];
+    }
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    pointingDeviceView.frame = self.view.bounds;
+    [sharedScreenView setNeedsUpdateConstraints];
 }
 
 - (BOOL)canBecomeFirstResponder {
@@ -173,7 +191,6 @@
             keyboardView.hidden = YES;
         }
     }
-    
 }
 
 - (void)loadKeyboardView {
@@ -216,3 +233,32 @@
 }
 
 @end
+
+
+#ifdef __IPHONE_13_4
+@implementation B2ViewController (PointerInteraction)
+
+- (Point)mouseLocForCGPoint:(CGPoint)point {
+    Point mouseLoc;
+    CGRect screenBounds = sharedScreenView.screenBounds;
+    CGSize screenSize = sharedScreenView.screenSize;
+    mouseLoc.h = (point.x - screenBounds.origin.x) * (screenSize.width/screenBounds.size.width);
+    mouseLoc.v = (point.y - screenBounds.origin.y) * (screenSize.height/screenBounds.size.height);
+    return mouseLoc;
+}
+
+- (UIPointerRegion *)pointerInteraction:(UIPointerInteraction *)interaction regionForRequest:(UIPointerRegionRequest *)request defaultRegion:(UIPointerRegion *)defaultRegion  API_AVAILABLE(ios(13.4)){
+    if (request != nil) {
+        ADBSetRelMouseMode(false);
+        Point mouseLoc = [self mouseLocForCGPoint:request.location];
+        ADBMouseMoved(mouseLoc.h, mouseLoc.v);
+    }
+    return defaultRegion;
+}
+
+- (UIPointerStyle *)pointerInteraction:(UIPointerInteraction *)interaction styleForRegion:(UIPointerRegion *)region API_AVAILABLE(ios(13.4)) {
+    return [UIPointerStyle hiddenPointerStyle];
+}
+
+@end
+#endif
