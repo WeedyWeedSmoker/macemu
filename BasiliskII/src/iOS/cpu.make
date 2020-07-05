@@ -15,3 +15,5 @@ gencpu: $(GENCPU_SOURCES)
 
 clean:
 	rm -f gencpu build68k $(BUILD_SOURCES)
+
+install: all

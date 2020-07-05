@@ -7,6 +7,7 @@
 //
 
 #import "B2TrackPad.h"
+#import "B2AppDelegate.h"
 #include "sysdeps.h"
 #include "adb.h"
 #import <AudioToolbox/AudioToolbox.h>
@@ -66,7 +67,10 @@
     previousTouchTime = event.timestamp;
     previousTouchLoc = touchLoc;
 }
+
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+    if (![B2AppDelegate sharedInstance].emulatorRunning) return;
+    
     UITouch *touch = touches.anyObject;
     CGPoint touchLoc = [touch locationInView:self];
     previousTouchLoc = [touch previousLocationInView:self];

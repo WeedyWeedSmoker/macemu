@@ -248,7 +248,7 @@
 }
 
 - (UIPointerRegion *)pointerInteraction:(UIPointerInteraction *)interaction regionForRequest:(UIPointerRegionRequest *)request defaultRegion:(UIPointerRegion *)defaultRegion  API_AVAILABLE(ios(13.4)){
-    if (request != nil) {
+    if (request != nil && [B2AppDelegate sharedInstance].emulatorRunning) {
         ADBSetRelMouseMode(false);
         Point mouseLoc = [self mouseLocForCGPoint:request.location];
         ADBMouseMoved(mouseLoc.h, mouseLoc.v);
