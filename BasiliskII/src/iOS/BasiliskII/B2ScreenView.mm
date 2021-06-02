@@ -42,7 +42,8 @@ B2ScreenView *sharedScreenView = nil;
     CGSize portraitScreenSize = CGSizeMake(screenSize.height, screenSize.width);
     
     // current screen size
-    [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"videoDepth": @(8), @"videoSize": NSStringFromCGSize(screenSize)}];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults registerDefaults:@{@"videoDepth": @(8), @"videoSize": NSStringFromCGSize(screenSize)}];
     [videoModes addObject:[NSValue valueWithCGSize:landscapeScreenSize]];
     [videoModes addObject:[NSValue valueWithCGSize:portraitScreenSize]];
     if ([self hasRetinaVideoMode]) {
@@ -56,6 +57,13 @@ B2ScreenView *sharedScreenView = nil;
     [videoModes addObject:[NSValue valueWithCGSize:CGSizeMake(800, 600)]];
     [videoModes addObject:[NSValue valueWithCGSize:CGSizeMake(832, 624)]];
     [videoModes addObject:[NSValue valueWithCGSize:CGSizeMake(1024, 768)]];
+    
+    // custom size
+    CGSize customSize = CGSizeFromString([defaults valueForKey:@"videoSize"]);
+    NSValue *customSizeValue = [NSValue valueWithCGSize:customSize];
+    if (!CGSizeEqualToSize(CGSizeZero, customSize) && ![videoModes containsObject:customSizeValue]) {
+        [videoModes addObject:customSizeValue];
+    }
     
     _videoModes = [NSArray arrayWithArray:videoModes];
 }
